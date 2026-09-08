@@ -1,0 +1,20 @@
+{
+  "name": "SUPPORT",
+  "short_name": "SUPPORT",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0c2238",
+  "theme_color": "#0c2238",
+  "icons": [
+    {
+      "src": "SUPPORT_icon_180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "SUPPORT_icon_512_launcher.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
