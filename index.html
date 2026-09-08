@@ -1,31 +1,275 @@
-<script>
-(function(){
-  const APP_URL = "https://script.google.com/macros/s/AKfycbxhCKJHXlOE_3R0zD30B_EXg78DsKFKI0pQQ9dfnyYkAm7iNy5lERseqr_Wn6_az0fJ5A/exec";
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
 
-  // إذا انفتح من الأيقونة على الشاشة الرئيسية
-  if (window.navigator.standalone === true) {
-    setTimeout(function(){
-      window.location.replace(APP_URL);
-    }, 150);
-    return;
-  }
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"
+  >
 
-  // إذا انفتح من Safari للتثبيت
-  document.getElementById("setupBox").style.display = "none";
-  document.getElementById("savedBox").style.display = "block";
+  <meta name="theme-color" content="#0c2238">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SUPPORT">
+  <meta name="mobile-web-app-capable" content="yes">
 
-  document.getElementById("savedBox").innerHTML = `
-    <div class="msg">
-      SUPPORT جاهز للتثبيت ✅<br>
-      من Safari اضغط مشاركة ثم Add to Home Screen.
+  <title>SUPPORT</title>
+
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="SUPPORT_icon_180.png"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="512x512"
+    href="SUPPORT_icon_512_launcher.png"
+  >
+
+  <link
+    rel="manifest"
+    href="manifest.webmanifest"
+  >
+
+  <style>
+    *{
+      box-sizing:border-box;
+    }
+
+    html,
+    body{
+      margin:0;
+      width:100%;
+      min-height:100%;
+      background:#0c2238;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+      min-height:100dvh;
+      display:grid;
+      place-items:center;
+      padding:
+        max(24px, env(safe-area-inset-top))
+        24px
+        max(24px, env(safe-area-inset-bottom));
+      color:#fff;
+    }
+
+    .card{
+      width:min(420px,100%);
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:28px;
+      padding:30px 28px;
+      box-shadow:0 24px 70px rgba(0,0,0,.28);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      text-align:center;
+    }
+
+    .logo{
+      width:118px;
+      height:118px;
+      object-fit:cover;
+      border-radius:28px;
+      display:block;
+      margin:0 auto 18px;
+      box-shadow:0 16px 35px rgba(0,0,0,.25);
+    }
+
+    h1{
+      margin:0;
+      font-size:32px;
+      letter-spacing:1.5px;
+      font-weight:900;
+    }
+
+    .sub{
+      margin:7px 0 25px;
+      color:#b8c7d8;
+      font-size:13px;
+    }
+
+    .msg{
+      margin:0;
+      padding:18px 12px;
+      color:#d3deea;
+      font-size:14px;
+      line-height:1.9;
+    }
+
+    .loader{
+      width:36px;
+      height:36px;
+      margin:18px auto 5px;
+      border:4px solid rgba(255,255,255,.18);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+    }
+
+    .open-btn{
+      width:100%;
+      min-height:52px;
+      border:0;
+      border-radius:15px;
+      margin-top:14px;
+      padding:0 18px;
+      background:#fff;
+      color:#0c2238;
+      font-size:15px;
+      font-weight:900;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .hint{
+      margin-top:14px;
+      color:#91a4b9;
+      font-size:11px;
+      line-height:1.7;
+    }
+
+    @keyframes spin{
+      to{
+        transform:rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="card">
+
+    <img
+      class="logo"
+      src="SUPPORT_icon_180.png"
+      alt="SUPPORT"
+    >
+
+    <h1>SUPPORT</h1>
+
+    <div class="sub">
+      Kuwait Fire Force · Technical Systems
     </div>
-    <button type="button" onclick="window.location.href='${APP_URL}'">
-      فتح SUPPORT
-    </button>
-  `;
-})();
 
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("./sw.js").catch(function(){});
-}
-</script>
+    <div id="browserView">
+      <div class="msg">
+        SUPPORT جاهز للتثبيت ✅
+        <br>
+        من Safari اضغط مشاركة ثم
+        <b>Add to Home Screen</b>.
+      </div>
+
+      <button
+        class="open-btn"
+        type="button"
+        onclick="openSupport()"
+      >
+        فتح SUPPORT
+      </button>
+
+      <div class="hint">
+        ثبّت هذه الصفحة على الشاشة الرئيسية حتى يظهر شعار SUPPORT.
+      </div>
+    </div>
+
+    <div id="appView" style="display:none;">
+      <div class="loader"></div>
+
+      <div class="msg">
+        جاري فتح SUPPORT...
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+
+    const APP_URL =
+      "https://script.google.com/macros/s/AKfycbxhCKJHXlOE_3R0zD30B_EXg78DsKFKI0pQQ9dfnyYkAm7iNy5lERseqr_Wn6_az0fJ5A/exec";
+
+
+    function openSupport(){
+
+      window.location.href =
+        APP_URL;
+
+    }
+
+
+    (function(){
+
+      const isStandalone =
+        window.navigator.standalone === true
+        ||
+        window.matchMedia(
+          "(display-mode: standalone)"
+        ).matches;
+
+
+      if(isStandalone){
+
+        document.getElementById(
+          "browserView"
+        ).style.display =
+          "none";
+
+
+        document.getElementById(
+          "appView"
+        ).style.display =
+          "block";
+
+
+        setTimeout(
+          function(){
+
+            window.location.replace(
+              APP_URL
+            );
+
+          },
+          350
+        );
+
+      }
+
+    })();
+
+
+    if(
+      "serviceWorker"
+      in navigator
+    ){
+
+      navigator.serviceWorker
+        .register("./sw.js")
+        .catch(
+          function(error){
+
+            console.log(
+              "Service Worker:",
+              error
+            );
+
+          }
+        );
+
+    }
+
+  </script>
+
+</body>
+</html>
