@@ -19,11 +19,9 @@
     html,body{
       margin:0;
       width:100%;
-      height:100%;
       min-height:100%;
       background:#0c2238;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      overflow:hidden;
     }
     body{min-height:100vh;min-height:100dvh;color:#fff}
 
@@ -46,30 +44,42 @@
     .open-btn{width:100%;min-height:52px;border:0;border-radius:15px;margin-top:14px;padding:0 18px;background:#fff;color:#0c2238;font-size:15px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
     .hint{margin-top:14px;color:#91a4b9;font-size:11px;line-height:1.7}
 
-    /* Installed app: the iframe itself fills the whole PWA viewport.
-       Do not reserve a second safe-area below it; iOS already owns that area. */
     #appShell{
       display:none;
       position:fixed;
       inset:0;
       width:100%;
       height:100%;
-      min-height:100dvh;
       background:#0c2238;
       overflow:hidden;
     }
 
+    /* Keep a very small area for the iPhone home indicator.
+       This is intentionally smaller than the full safe-area so the app does not look lifted. */
     #supportFrame{
       position:absolute;
-      inset:0;
+      top:0;
+      right:0;
+      left:0;
+      bottom:18px;
       width:100%;
-      height:100%;
-      min-height:100%;
+      height:auto;
       border:0;
       margin:0;
       padding:0;
       display:block;
       background:#f5f7fa;
+    }
+
+    #safeAreaFill{
+      position:absolute;
+      z-index:20;
+      right:0;
+      bottom:0;
+      left:0;
+      height:18px;
+      background:#0c2238;
+      pointer-events:none;
     }
 
     #splash{
@@ -90,12 +100,9 @@
     body.app-mode{
       position:fixed;
       inset:0;
-      width:100%;
-      height:100%;
       margin:0;
       background:#0c2238;
       overflow:hidden;
-      overscroll-behavior:none;
     }
     body.app-mode #installView{display:none}
     body.app-mode #appShell{display:block}
@@ -107,23 +114,15 @@
       <img class="logo" src="SUPPORT_icon_180.png" alt="SUPPORT">
       <h1>SUPPORT</h1>
       <div class="sub">Kuwait Fire Force · Technical Systems</div>
-      <div class="msg">
-        SUPPORT جاهز للتثبيت ✅<br>
-        من Safari اضغط مشاركة ثم <b>Add to Home Screen</b>.
-      </div>
+      <div class="msg">SUPPORT جاهز للتثبيت ✅<br>من Safari اضغط مشاركة ثم <b>Add to Home Screen</b>.</div>
       <button class="open-btn" type="button" onclick="openSupportInSafari()">فتح SUPPORT</button>
       <div class="hint">ثبّت هذه الصفحة على الشاشة الرئيسية حتى يظهر شعار SUPPORT ويفتح بدون شريط Safari.</div>
     </main>
   </section>
 
   <section id="appShell" aria-hidden="true">
-    <iframe
-      id="supportFrame"
-      title="SUPPORT"
-      allow="camera; microphone; geolocation; clipboard-read; clipboard-write"
-      src="about:blank"
-    ></iframe>
-
+    <iframe id="supportFrame" title="SUPPORT" allow="camera; microphone; geolocation; clipboard-read; clipboard-write" src="about:blank"></iframe>
+    <div id="safeAreaFill" aria-hidden="true"></div>
     <div id="splash">
       <img class="splash-logo" src="SUPPORT_icon_180.png" alt="SUPPORT">
       <div class="splash-title">SUPPORT</div>
@@ -154,19 +153,16 @@
         setTimeout(function(){ splash.classList.add("hide"); },350);
       },{once:true});
 
-      frame.src = APP_URL;
+      /* Unique URL prevents iOS from restoring the iframe at an old scroll position. */
+      frame.src = APP_URL + "?launcher=9&ts=" + Date.now();
 
-      setTimeout(function(){
-        splash.classList.add("hide");
-      },5000);
+      setTimeout(function(){ splash.classList.add("hide"); },5000);
     }
 
-    if(isStandalone()){
-      startInstalledApp();
-    }
+    if(isStandalone()) startInstalledApp();
 
     if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("./sw.js?v=8").catch(function(error){
+      navigator.serviceWorker.register("./sw.js?v=9").catch(function(error){
         console.log("Service Worker:",error);
       });
     }
