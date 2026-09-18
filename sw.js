@@ -1,4 +1,4 @@
-const CACHE = "support-launcher-v9";
+const CACHE = "support-launcher-v10";
 const ASSETS = [
   "./manifest.webmanifest",
   "./SUPPORT_icon_180.png",
