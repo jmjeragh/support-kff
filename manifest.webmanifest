@@ -1,7 +1,9 @@
 {
   "name": "SUPPORT",
   "short_name": "SUPPORT",
-  "start_url": "./",
+  "id": "./support-app",
+  "start_url": "./?app=2",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0c2238",
   "theme_color": "#0c2238",
