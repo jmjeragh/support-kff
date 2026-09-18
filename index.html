@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-  <meta name="theme-color" content="#f5f7fa">
+  <meta name="theme-color" content="#0c2238">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="SUPPORT">
@@ -20,14 +20,16 @@
       margin:0;
       width:100%;
       min-height:100%;
+      background:#0c2238;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     }
-    body{min-height:100vh;min-height:100dvh;background:#0c2238;color:#fff}
+    body{min-height:100vh;min-height:100dvh;color:#fff}
 
     #installView{
       min-height:100vh;min-height:100dvh;
       display:grid;place-items:center;
       padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));
+      background:#0c2238;
     }
     .card{
       width:min(420px,100%);background:rgba(255,255,255,.07);
@@ -42,35 +44,28 @@
     .open-btn{width:100%;min-height:52px;border:0;border-radius:15px;margin-top:14px;padding:0 18px;background:#fff;color:#0c2238;font-size:15px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
     .hint{margin-top:14px;color:#91a4b9;font-size:11px;line-height:1.7}
 
-    /* Installed app: force the shell and iframe to the iPhone's full screen height.
-       --support-app-height is set from the larger of innerHeight / screen.height. */
+    /* Installed iPhone app shell.
+       The outer page stays navy so the iOS bottom safe-area never appears white.
+       The embedded SUPPORT page still controls its own mobile layout. */
     #appShell{
       display:none;
       position:fixed;
-      top:0;
-      right:0;
-      left:0;
-      bottom:auto;
+      inset:0;
       width:100%;
-      height:var(--support-app-height,100lvh);
-      min-height:var(--support-app-height,100lvh);
-      background:#f5f7fa;
+      height:100%;
+      background:#0c2238;
       overflow:hidden;
     }
     #supportFrame{
       position:absolute;
-      top:0;
-      right:0;
-      left:0;
-      bottom:auto;
+      inset:0;
       width:100%;
-      height:var(--support-app-height,100lvh);
-      min-height:var(--support-app-height,100lvh);
+      height:100%;
       border:0;
       margin:0;
       padding:0;
       display:block;
-      background:#f5f7fa;
+      background:transparent;
     }
     #splash{
       position:absolute;inset:0;z-index:5;
@@ -87,15 +82,9 @@
 
     body.app-mode{
       position:fixed;
-      top:0;
-      right:0;
-      left:0;
-      bottom:auto;
-      width:100%;
-      height:var(--support-app-height,100lvh);
-      min-height:var(--support-app-height,100lvh);
+      inset:0;
       margin:0;
-      background:#f5f7fa;
+      background:#0c2238;
       overflow:hidden;
     }
     body.app-mode #installView{display:none}
@@ -143,20 +132,8 @@
       window.location.href = APP_URL;
     }
 
-    function syncAppHeight(){
-      const screenHeight = (window.screen && window.screen.height) ? window.screen.height : 0;
-      const innerHeight = window.innerHeight || 0;
-      const visualHeight = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : 0;
-      const height = Math.max(screenHeight, innerHeight, visualHeight);
-      if(height > 0){
-        document.documentElement.style.setProperty("--support-app-height", height + "px");
-      }
-    }
-
     function startInstalledApp(){
-      syncAppHeight();
       document.body.classList.add("app-mode");
-
       const shell = document.getElementById("appShell");
       const frame = document.getElementById("supportFrame");
       const splash = document.getElementById("splash");
@@ -167,14 +144,6 @@
       },{once:true});
 
       frame.src = APP_URL;
-
-      window.addEventListener("resize",syncAppHeight);
-      window.addEventListener("orientationchange",function(){
-        setTimeout(syncAppHeight,120);
-      });
-      if(window.visualViewport){
-        window.visualViewport.addEventListener("resize",syncAppHeight);
-      }
 
       setTimeout(function(){
         splash.classList.add("hide");
