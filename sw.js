@@ -1,4 +1,4 @@
-const CACHE = "support-launcher-stable-v11";
+const CACHE = "support-launcher-reset-normal-v14";
 const ASSETS = [
   "./manifest.webmanifest",
   "./SUPPORT_icon_180.png",
@@ -22,12 +22,10 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
   if(event.request.method !== "GET") return;
-
   if(event.request.mode === "navigate"){
     event.respondWith(fetch(event.request));
     return;
   }
-
   event.respondWith(
     caches.match(event.request).then(hit => hit || fetch(event.request))
   );
