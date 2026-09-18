@@ -1,4 +1,4 @@
-const CACHE = "support-launcher-v3";
+const CACHE = "support-launcher-v4";
 const ASSETS = [
   "./manifest.webmanifest",
   "./SUPPORT_icon_180.png",
@@ -24,11 +24,7 @@ self.addEventListener("fetch", event => {
   if(event.request.method !== "GET") return;
 
   if(event.request.mode === "navigate"){
-    event.respondWith(
-      fetch(event.request)
-        .then(response => response)
-        .catch(() => caches.match("./"))
-    );
+    event.respondWith(fetch(event.request));
     return;
   }
 
