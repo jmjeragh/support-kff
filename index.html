@@ -44,9 +44,7 @@
     .open-btn{width:100%;min-height:52px;border:0;border-radius:15px;margin-top:14px;padding:0 18px;background:#fff;color:#0c2238;font-size:15px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
     .hint{margin-top:14px;color:#91a4b9;font-size:11px;line-height:1.7}
 
-    /* Installed iPhone app shell.
-       The outer page stays navy so the iOS bottom safe-area never appears white.
-       The embedded SUPPORT page still controls its own mobile layout. */
+    /* Installed iPhone app shell */
     #appShell{
       display:none;
       position:fixed;
@@ -56,19 +54,39 @@
       background:#0c2238;
       overflow:hidden;
     }
+
+    /* Reserve the iPhone home-indicator area OUTSIDE the iframe.
+       This keeps SUPPORT's bottom nav fully visible instead of letting iOS cover it. */
     #supportFrame{
       position:absolute;
-      inset:0;
+      top:0;
+      right:0;
+      left:0;
+      bottom:max(env(safe-area-inset-bottom),34px);
       width:100%;
-      height:100%;
+      height:auto;
       border:0;
       margin:0;
       padding:0;
       display:block;
-      background:transparent;
+      background:#f5f7fa;
     }
+
+    #safeAreaFill{
+      position:absolute;
+      z-index:20;
+      right:0;
+      bottom:0;
+      left:0;
+      height:max(env(safe-area-inset-bottom),34px);
+      background:#0c2238;
+      pointer-events:none;
+    }
+
     #splash{
-      position:absolute;inset:0;z-index:5;
+      position:absolute;
+      top:0;right:0;left:0;bottom:0;
+      z-index:30;
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
       padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));
       background:radial-gradient(circle at 50% 22%,rgba(66,139,226,.24),transparent 32%),linear-gradient(160deg,#061426,#0a2340 60%,#0c2f54);
@@ -113,6 +131,9 @@
       allow="camera; microphone; geolocation; clipboard-read; clipboard-write"
       src="about:blank"
     ></iframe>
+
+    <div id="safeAreaFill" aria-hidden="true"></div>
+
     <div id="splash">
       <img class="splash-logo" src="SUPPORT_icon_180.png" alt="SUPPORT">
       <div class="splash-title">SUPPORT</div>
@@ -155,7 +176,7 @@
     }
 
     if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("./sw.js").catch(function(error){
+      navigator.serviceWorker.register("./sw.js?v=7").catch(function(error){
         console.log("Service Worker:",error);
       });
     }
