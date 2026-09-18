@@ -42,20 +42,30 @@
     .open-btn{width:100%;min-height:52px;border:0;border-radius:15px;margin-top:14px;padding:0 18px;background:#fff;color:#0c2238;font-size:15px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
     .hint{margin-top:14px;color:#91a4b9;font-size:11px;line-height:1.7}
 
-    /* Installed app: fixed inset fills the real iPhone viewport.
-       No vh/dvh height here, because iOS standalone can leave a bottom gap. */
+    /* Installed app: force the shell and iframe to the iPhone's full screen height.
+       --support-app-height is set from the larger of innerHeight / screen.height. */
     #appShell{
       display:none;
       position:fixed;
-      inset:0;
+      top:0;
+      right:0;
+      left:0;
+      bottom:auto;
+      width:100%;
+      height:var(--support-app-height,100lvh);
+      min-height:var(--support-app-height,100lvh);
       background:#f5f7fa;
       overflow:hidden;
     }
     #supportFrame{
       position:absolute;
-      inset:0;
+      top:0;
+      right:0;
+      left:0;
+      bottom:auto;
       width:100%;
-      height:100%;
+      height:var(--support-app-height,100lvh);
+      min-height:var(--support-app-height,100lvh);
       border:0;
       margin:0;
       padding:0;
@@ -77,10 +87,13 @@
 
     body.app-mode{
       position:fixed;
-      inset:0;
+      top:0;
+      right:0;
+      left:0;
+      bottom:auto;
       width:100%;
-      height:auto;
-      min-height:0;
+      height:var(--support-app-height,100lvh);
+      min-height:var(--support-app-height,100lvh);
       margin:0;
       background:#f5f7fa;
       overflow:hidden;
@@ -130,8 +143,20 @@
       window.location.href = APP_URL;
     }
 
+    function syncAppHeight(){
+      const screenHeight = (window.screen && window.screen.height) ? window.screen.height : 0;
+      const innerHeight = window.innerHeight || 0;
+      const visualHeight = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : 0;
+      const height = Math.max(screenHeight, innerHeight, visualHeight);
+      if(height > 0){
+        document.documentElement.style.setProperty("--support-app-height", height + "px");
+      }
+    }
+
     function startInstalledApp(){
+      syncAppHeight();
       document.body.classList.add("app-mode");
+
       const shell = document.getElementById("appShell");
       const frame = document.getElementById("supportFrame");
       const splash = document.getElementById("splash");
@@ -142,6 +167,14 @@
       },{once:true});
 
       frame.src = APP_URL;
+
+      window.addEventListener("resize",syncAppHeight);
+      window.addEventListener("orientationchange",function(){
+        setTimeout(syncAppHeight,120);
+      });
+      if(window.visualViewport){
+        window.visualViewport.addEventListener("resize",syncAppHeight);
+      }
 
       setTimeout(function(){
         splash.classList.add("hide");
