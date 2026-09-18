@@ -16,20 +16,13 @@
 
   <style>
     *{box-sizing:border-box}
-    html,body{
-      margin:0;
-      width:100%;
-      min-height:100%;
-      background:#0c2238;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-    }
-    body{min-height:100vh;min-height:100dvh;color:#fff}
+    html,body{margin:0;width:100%;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    body{min-height:100vh;min-height:100dvh;background:#0c2238;color:#fff}
 
     #installView{
       min-height:100vh;min-height:100dvh;
       display:grid;place-items:center;
       padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));
-      background:#0c2238;
     }
     .card{
       width:min(420px,100%);background:rgba(255,255,255,.07);
@@ -44,48 +37,20 @@
     .open-btn{width:100%;min-height:52px;border:0;border-radius:15px;margin-top:14px;padding:0 18px;background:#fff;color:#0c2238;font-size:15px;font-weight:900;cursor:pointer;-webkit-tap-highlight-color:transparent}
     .hint{margin-top:14px;color:#91a4b9;font-size:11px;line-height:1.7}
 
-    #appShell{
-      display:none;
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      background:#0c2238;
-      overflow:hidden;
-    }
-
-    /* Keep a very small area for the iPhone home indicator.
-       This is intentionally smaller than the full safe-area so the app does not look lifted. */
+    #appShell{display:none;position:fixed;inset:0;background:#f5f7fa;overflow:hidden}
     #supportFrame{
       position:absolute;
-      top:0;
+      top:env(safe-area-inset-top);
       right:0;
+      bottom:env(safe-area-inset-bottom);
       left:0;
-      bottom:18px;
       width:100%;
-      height:auto;
+      height:calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       border:0;
-      margin:0;
-      padding:0;
-      display:block;
       background:#f5f7fa;
     }
-
-    #safeAreaFill{
-      position:absolute;
-      z-index:20;
-      right:0;
-      bottom:0;
-      left:0;
-      height:18px;
-      background:#0c2238;
-      pointer-events:none;
-    }
-
     #splash{
-      position:absolute;
-      inset:0;
-      z-index:30;
+      position:absolute;inset:0;z-index:5;
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
       padding:max(24px,env(safe-area-inset-top)) 24px max(24px,env(safe-area-inset-bottom));
       background:radial-gradient(circle at 50% 22%,rgba(66,139,226,.24),transparent 32%),linear-gradient(160deg,#061426,#0a2340 60%,#0c2f54);
@@ -97,13 +62,7 @@
     .spinner{width:34px;height:34px;border:3px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    body.app-mode{
-      position:fixed;
-      inset:0;
-      margin:0;
-      background:#0c2238;
-      overflow:hidden;
-    }
+    body.app-mode{background:#f5f7fa;overflow:hidden}
     body.app-mode #installView{display:none}
     body.app-mode #appShell{display:block}
   </style>
@@ -114,15 +73,22 @@
       <img class="logo" src="SUPPORT_icon_180.png" alt="SUPPORT">
       <h1>SUPPORT</h1>
       <div class="sub">Kuwait Fire Force · Technical Systems</div>
-      <div class="msg">SUPPORT جاهز للتثبيت ✅<br>من Safari اضغط مشاركة ثم <b>Add to Home Screen</b>.</div>
+      <div class="msg">
+        SUPPORT جاهز للتثبيت ✅<br>
+        من Safari اضغط مشاركة ثم <b>Add to Home Screen</b>.
+      </div>
       <button class="open-btn" type="button" onclick="openSupportInSafari()">فتح SUPPORT</button>
       <div class="hint">ثبّت هذه الصفحة على الشاشة الرئيسية حتى يظهر شعار SUPPORT ويفتح بدون شريط Safari.</div>
     </main>
   </section>
 
   <section id="appShell" aria-hidden="true">
-    <iframe id="supportFrame" title="SUPPORT" allow="camera; microphone; geolocation; clipboard-read; clipboard-write" src="about:blank"></iframe>
-    <div id="safeAreaFill" aria-hidden="true"></div>
+    <iframe
+      id="supportFrame"
+      title="SUPPORT"
+      allow="camera; microphone; geolocation; clipboard-read; clipboard-write"
+      src="about:blank"
+    ></iframe>
     <div id="splash">
       <img class="splash-logo" src="SUPPORT_icon_180.png" alt="SUPPORT">
       <div class="splash-title">SUPPORT</div>
@@ -150,18 +116,22 @@
       shell.setAttribute("aria-hidden","false");
 
       frame.addEventListener("load",function(){
-        setTimeout(function(){ splash.classList.add("hide"); },350);
+        setTimeout(function(){ splash.classList.add("hide"); },450);
       },{once:true});
 
-      frame.src = APP_URL + "?launcher=9&ts=" + Date.now();
+      frame.src = APP_URL;
 
-      setTimeout(function(){ splash.classList.add("hide"); },5000);
+      setTimeout(function(){
+        splash.classList.add("hide");
+      },5000);
     }
 
-    if(isStandalone()) startInstalledApp();
+    if(isStandalone()){
+      startInstalledApp();
+    }
 
     if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("./sw.js?v=9").catch(function(error){
+      navigator.serviceWorker.register("./sw.js").catch(function(error){
         console.log("Service Worker:",error);
       });
     }
